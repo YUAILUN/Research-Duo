@@ -102,7 +102,20 @@ python3 skills/research-duo/scripts/decision_tools.py calibrate skills/research-
 
 输入、公式与限制见 [决策协议](skills/research-duo/references/decision-protocol.md)。示例全为合成资料/假设数字，不是模型实测或科研发现。无事实依据的概率不会因进入脚本就变可靠，效用分数也不是成功概率。
 
-## 验证与共同开发
+## 合作开发
+
+Research Duo 由 [YUAILUN](https://github.com/YUAILUN) 发起，围绕多视角科研探索与结构化决策建立整体框架。YUAILUN 完成了核心工作流、决策工具及跨平台部署；[hudancqmu-cyber](https://github.com/hudancqmu-cyber) 已提交护理研究设计案例，后续负责科研方法审查、应用场景拓展与评估验证。
+
+双方按框架工程与科研验证两个工作方向协作，后续工作量以大致均衡为目标：
+
+| 负责人 | 主要职责 |
+| --- | --- |
+| YUAILUN | 整体架构、探索与决策工作流、类型化判断与计算工具、平台兼容、自动化测试、集成与发布 |
+| hudancqmu-cyber | 科研方法审查、领域应用案例、评估任务与评分标准、实际验证及基于失败案例的修订 |
+
+双方通过案例测试、问题复核和迭代修订共同推进项目。已提交的内容以仓库提交及 Pull Request 为依据；评估设计、执行与结果按[评估方案](evals/README.md)记录。
+
+## 验证与贡献指南
 
 ```bash
 python3 -m unittest discover -s tests -v
