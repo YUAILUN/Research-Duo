@@ -2,6 +2,13 @@
 
 **让多视角探索落到可识别的研究、可区分的实验和可复核的决定。**
 
+## 项目共同贡献者
+
+- [YUAILUN](https://github.com/YUAILUN)
+- [hudancqmu-cyber](https://github.com/hudancqmu-cyber)
+
+本名单由项目发起人指定，用于项目署名；GitHub 侧栏的 Contributors 按提交记录自动统计。
+
 Research Duo 是兼容 **Claude Code、Codex、Google Antigravity** 的科研 skill。它把 [Pantheon 的多视角探索](https://www.k-dense.ai/blog/introducing-pantheon-80-voices)与 [Jev 的原子判断、类型约束和显式组合思想](https://docs.typesafe.ai/introduction)融入一个闭环，并针对 [Fusion Intelligence](https://github.com/YUAILUN/Fusion-Intelligence) 已有的证据与审议能力增加可执行的决策分析。
 
 **不调用 Jev，不需要 TypeSafe API key。** 科研推理由所在平台的模型完成；Python 脚本只做本地验证和计算。这里的“蒸馏”是方法与工作流，不是训练模型或复制 RLCD。独立项目，非 K-Dense 或 TypeSafe 官方产品。
