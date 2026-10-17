@@ -1,0 +1,55 @@
+{
+  "nodes": [
+    {
+      "id": "E1",
+      "kind": "evidence",
+      "label": "Synthetic original observation",
+      "source": "SIMULATED dataset v1",
+      "cluster": "same_cohort",
+      "depends_on": []
+    },
+    {
+      "id": "E2",
+      "kind": "evidence",
+      "label": "Synthetic secondary report of the same data",
+      "source": "SIMULATED report v1",
+      "cluster": "same_cohort",
+      "depends_on": []
+    },
+    {
+      "id": "A1",
+      "kind": "assumption",
+      "label": "Measurements transfer to the target setting",
+      "depends_on": []
+    },
+    {
+      "id": "C1",
+      "kind": "claim",
+      "label": "Observed association",
+      "depends_on": [
+        "E1",
+        "E2"
+      ]
+    },
+    {
+      "id": "J1",
+      "kind": "judgment",
+      "label": "Relevance to target setting",
+      "depends_on": [
+        "C1",
+        "A1"
+      ]
+    },
+    {
+      "id": "D1",
+      "kind": "decision",
+      "label": "Revisit proposed next experiment",
+      "depends_on": [
+        "J1"
+      ]
+    }
+  ],
+  "changed_ids": [
+    "E1"
+  ]
+}

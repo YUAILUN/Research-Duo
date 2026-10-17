@@ -1,0 +1,53 @@
+{
+  "utility_unit": "synthetic utility points",
+  "basis": "hypothetical",
+  "assumptions": {
+    "priors": "Illustration only: equal state probabilities, not estimated from research data.",
+    "likelihoods": "Illustration only: symmetric 0.8 diagnostic accuracy for the informative test.",
+    "utilities": "Illustration only: advance gives +100 or -100; defer gives 0. Costs share the same utility unit."
+  },
+  "priors": {
+    "effective": 0.5,
+    "ineffective": 0.5
+  },
+  "utilities": {
+    "advance": {
+      "effective": 100,
+      "ineffective": -100
+    },
+    "defer": {
+      "effective": 0,
+      "ineffective": 0
+    }
+  },
+  "experiments": [
+    {
+      "id": "informative_test",
+      "cost": 5,
+      "likelihoods": {
+        "effective": {
+          "positive": 0.8,
+          "negative": 0.2
+        },
+        "ineffective": {
+          "positive": 0.2,
+          "negative": 0.8
+        }
+      }
+    },
+    {
+      "id": "uninformative_test",
+      "cost": 1,
+      "likelihoods": {
+        "effective": {
+          "positive": 0.5,
+          "negative": 0.5
+        },
+        "ineffective": {
+          "positive": 0.5,
+          "negative": 0.5
+        }
+      }
+    }
+  ]
+}

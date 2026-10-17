@@ -1,32 +1,35 @@
 {
-  "risk": "low",
-  "evidence_status": "conflicted",
-  "in_distribution": true,
+  "decision_id": "SIM-D1",
+  "risk": "medium",
   "reversible": true,
-  "provider": "fixture",
-  "model": "synthetic-fixture",
-  "question_set_id": "synthetic-citation-v1",
-  "calibration": {
-    "validated": false,
-    "model": null,
-    "question_set_id": null,
-    "validation_ref": null
+  "framing_status": "needs_reframe",
+  "evidence_status": "verified",
+  "distribution_shift": "none",
+  "decision_stability": "untested",
+  "evidence_ids": [
+    "SIM-E1"
+  ],
+  "requirements": {
+    "J1": [
+      true
+    ]
   },
-  "answer": {
-    "type": "choice",
-    "choice": "supports",
-    "probabilities": {
-      "supports": 0.96,
-      "insufficient": 0.03,
-      "contradicts": 0.01
-    },
-    "confidence": 0.94
-  },
-  "policy": {
-    "min_probability": 0.85,
-    "min_margin": 0.2
-  },
-  "abstain_options": [
-    "insufficient"
+  "judgments": [
+    {
+      "id": "J1",
+      "kind": "predicate",
+      "question": "Can the current lab-confounded comparison identify the treatment effect?",
+      "criteria": {
+        "true": "A justified within-setting comparison or identification strategy is established.",
+        "false": "Treatment is completely confounded with laboratory and no identification strategy is established."
+      },
+      "value": false,
+      "status": "grounded",
+      "basis": "observed",
+      "evidence_ids": [
+        "SIM-E1"
+      ],
+      "rationale": "Synthetic brief: A appears only in lab X and B only in lab Y. The comparison cannot separate lab from treatment."
+    }
   ]
 }

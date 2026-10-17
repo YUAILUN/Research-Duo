@@ -1,0 +1,22 @@
+{
+  "utility_unit": "synthetic utility points",
+  "assumptions": "Illustrative utilities only. Two stipulated scenarios; probabilities unavailable. Real use must justify units, utilities and scenario coverage.",
+  "scenarios": [
+    "effect_transfers",
+    "effect_fails"
+  ],
+  "utilities": {
+    "advance": {
+      "effect_transfers": 100,
+      "effect_fails": -100
+    },
+    "defer": {
+      "effect_transfers": 0,
+      "effect_fails": 0
+    },
+    "bounded_pilot": {
+      "effect_transfers": 35,
+      "effect_fails": -5
+    }
+  }
+}

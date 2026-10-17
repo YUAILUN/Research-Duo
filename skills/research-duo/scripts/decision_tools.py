@@ -1,61 +1,65 @@
 #!/usr/bin/env python3
-"""Deterministic advisory routing, transparent ranking and binary calibration."""
+"""Local decision contracts, evidence tracing, utility analysis and calibration."""
 import argparse
 import json
 import math
 import sys
-from jev_client import load_json, number, require, text, validate_answer
+from contracts import load_json, number, require, strings, text, validate_judgment, valid_value
+from decision_math import robust, voi
+from evidence_graph import audit
 
 
 def gate(context):
     require(isinstance(context, dict), "gate context must be an object")
-    require(context.get("risk") in ("low", "medium", "high"), "invalid risk")
-    require(context.get("evidence_status") in ("verified", "partial", "missing", "conflicted"), "invalid evidence status")
-    for key in ("in_distribution", "reversible"):
-        require(type(context.get(key)) is bool, f"{key}: boolean required")
-    require(context.get("provider") in ("jev", "llm", "human", "fixture"), "invalid provider")
-    for key in ("model", "question_set_id"):
-        text(context.get(key), key)
-    answer = context.get("answer")
-    require(isinstance(answer, dict), "answer required")
-    probs = answer.get("probabilities")
-    require(isinstance(probs, dict) and 2 <= len(probs) <= 255, "Choice distribution required")
-    require(all(isinstance(k, str) and k.strip() for k in probs), "option IDs required")
-    validate_answer({"type": "choice", "criteria": {k: None for k in probs}}, answer)
-    policy = context.get("policy")
-    require(isinstance(policy, dict), "policy required")
-    min_p = number(policy.get("min_probability"), "min_probability", 0.5, 1)
-    min_margin = number(policy.get("min_margin"), "min_margin")
-    abstain = context.get("abstain_options")
-    require(isinstance(abstain, list) and all(isinstance(x, str) for x in abstain), "abstain_options must be a string array")
-    require(set(abstain) <= set(probs), "abstain option outside distribution")
-    calibration = context.get("calibration")
-    require(isinstance(calibration, dict) and type(calibration.get("validated")) is bool, "calibration.validated must be boolean")
-    ordered = sorted(probs.values(), reverse=True)
-    p, margin = ordered[0], ordered[0] - ordered[1]
-    route, reason = "recommend", "validated_low_risk_advisory_candidate"
-    if context["risk"] == "high" or not context["reversible"]:
-        route, reason = "review", "high_impact_or_irreversible"
-    elif context["evidence_status"] in ("missing", "partial"):
-        route, reason = "gather_evidence", "decisive_evidence_incomplete"
-    elif context["evidence_status"] == "conflicted":
-        route, reason = "deliberate", "resolve_material_conflict"
-    elif not context["in_distribution"]:
-        route, reason = "review", "outside_validated_scope"
-    elif (context["provider"] != "jev" or not calibration["validated"]
-          or context["model"] in ("jev-latest", "jev-preview")
-          or calibration.get("model") != context["model"]
-          or calibration.get("question_set_id") != context["question_set_id"]
-          or not isinstance(calibration.get("validation_ref"), str)
-          or not calibration["validation_ref"].strip()):
-        route, reason = "review", "no_matching_domain_validation"
-    elif answer["choice"] in abstain:
-        route, reason = "deliberate", "explicit_abstention"
-    elif p < min_p or margin < min_margin or math.isclose(margin, 0, abs_tol=1e-12):
-        route, reason = "deliberate", "uncertain_or_near_tie"
-    return {"route": route, "reason": reason, "choice": answer["choice"],
-            "top_probability": p, "margin": margin, "execute": False,
-            "notice": "Advisory only; input declarations require independent verification."}
+    text(context.get("decision_id"), "decision_id")
+    choices = {
+        "risk": ("low", "medium", "high"),
+        "framing_status": ("sound", "needs_reframe"),
+        "evidence_status": ("verified", "partial", "missing", "conflicted"),
+        "distribution_shift": ("none", "possible", "unknown"),
+        "decision_stability": ("stable", "sensitive", "untested"),
+    }
+    for key, allowed in choices.items():
+        require(context.get(key) in allowed, f"invalid {key}")
+    require(type(context.get("reversible")) is bool, "reversible must be boolean")
+    evidence = strings(context.get("evidence_ids"), "evidence_ids")
+    judgments = context.get("judgments")
+    require(isinstance(judgments, list) and judgments, "judgments required")
+    by_id = {}
+    for item in judgments:
+        validate_judgment(item, evidence)
+        require(item["id"] not in by_id, "duplicate judgment id")
+        by_id[item["id"]] = item
+    requirements = context.get("requirements")
+    require(isinstance(requirements, dict) and requirements, "explicit decision requirements needed")
+    for jid, accepted in requirements.items():
+        require(jid in by_id, "required judgment missing")
+        require(isinstance(accepted, list) and accepted, "accepted_values must be nonempty")
+        require(all(valid_value(by_id[jid], v) for v in accepted), "accepted value outside judgment type")
+    needed = [by_id[jid] for jid in requirements]
+    blockers = []
+
+    def block(condition, route, reason):
+        if condition:
+            blockers.append({"route": route, "reason": reason})
+
+    block(context["framing_status"] == "needs_reframe", "reframe", "question_or_estimand_not_identifiable")
+    block(context["risk"] == "high" or not context["reversible"], "review", "high_impact_or_irreversible")
+    block(context["evidence_status"] == "conflicted" or any(j["status"] == "conflicted" for j in needed),
+          "deliberate", "material_evidence_conflict")
+    block(context["evidence_status"] in ("missing", "partial") or any(j["status"] == "unknown" for j in needed),
+          "gather_evidence", "decisive_evidence_incomplete")
+    failed = [j["id"] for j in needed if j["status"] == "grounded" and j["value"] not in requirements[j["id"]]]
+    block(bool(failed), "revise_option", "required_condition_not_met")
+    block(context["distribution_shift"] != "none", "review", "scope_transfer_not_established")
+    block(context["decision_stability"] == "untested", "stress_test", "decision_stability_untested")
+    block(context["decision_stability"] == "sensitive", "compare_scenarios", "decision_depends_on_fragile_inputs")
+    block(any(j["status"] == "provisional" or j["basis"] == "assumed" for j in needed),
+          "review", "decision_depends_on_unverified_judgment")
+    first = blockers[0] if blockers else {"route": "recommend", "reason": "declared_conditions_satisfied"}
+    return {"decision_id": context["decision_id"], **first, "blockers": blockers,
+            "failed_requirements": failed, "execute": False,
+            "notice": "Advisory routing only. Input claims need substantive verification; a valid schema is not scientific validation."}
 
 
 def rank(data):
@@ -140,17 +144,17 @@ def calibrate(rows, bins=5, threshold=0.8):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("gate", "rank", "calibrate"))
+    parser.add_argument("command", choices=("gate", "rank", "calibrate", "voi", "robust", "audit"))
     parser.add_argument("input")
     parser.add_argument("--bins", type=int, default=5)
     parser.add_argument("--threshold", type=float, default=0.8)
     args = parser.parse_args()
     try:
         data = load_json(args.input)
-        result = calibrate(data, args.bins, args.threshold) if args.command == "calibrate" else {"gate": gate, "rank": rank}[args.command](data)
+        result = calibrate(data, args.bins, args.threshold) if args.command == "calibrate" else {"gate": gate, "rank": rank, "voi": voi, "robust": robust, "audit": audit}[args.command](data)
         print(json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False))
         return 0
-    except (ValueError, OSError, RecursionError) as error:
+    except (ValueError, OSError, RecursionError, OverflowError) as error:
         print(f"Error: {error}", file=sys.stderr)
         return 2
 
