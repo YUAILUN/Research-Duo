@@ -1,0 +1,33 @@
+{
+  "notice": "Synthetic subjective utilities, not empirical probabilities.",
+  "weights": {
+    "information_gain": 0.45,
+    "feasibility": 0.35,
+    "cost_efficiency": 0.2
+  },
+  "options": [
+    {
+      "id": "within_lab_randomized_pilot",
+      "eligible": true,
+      "scores": {
+        "information_gain": 0.95,
+        "feasibility": 0.7,
+        "cost_efficiency": 0.65
+      }
+    },
+    {
+      "id": "more_cross_lab_observations",
+      "eligible": true,
+      "scores": {
+        "information_gain": 0.35,
+        "feasibility": 0.95,
+        "cost_efficiency": 0.9
+      }
+    },
+    {
+      "id": "immediate_full_rollout",
+      "eligible": false,
+      "exclusion_reason": "Causal effect remains unidentified; fails preregistered evidence requirement."
+    }
+  ]
+}

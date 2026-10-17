@@ -1,0 +1,32 @@
+{
+  "risk": "low",
+  "evidence_status": "conflicted",
+  "in_distribution": true,
+  "reversible": true,
+  "provider": "fixture",
+  "model": "synthetic-fixture",
+  "question_set_id": "synthetic-citation-v1",
+  "calibration": {
+    "validated": false,
+    "model": null,
+    "question_set_id": null,
+    "validation_ref": null
+  },
+  "answer": {
+    "type": "choice",
+    "choice": "supports",
+    "probabilities": {
+      "supports": 0.96,
+      "insufficient": 0.03,
+      "contradicts": 0.01
+    },
+    "confidence": 0.94
+  },
+  "policy": {
+    "min_probability": 0.85,
+    "min_margin": 0.2
+  },
+  "abstain_options": [
+    "insufficient"
+  ]
+}
