@@ -94,7 +94,7 @@ python3 scripts/install_skill.py --target codex-legacy
 交付可执行的下一步、证据依据及继续/停止/转向规则。
 ```
 
-Codex 可把首句替换为 `使用 $research-duo`；Claude Code 使用 `/research-duo`。支持 quick、design/deep、update；不用同时启用所有计算。入口：[SKILL.md](skills/research-duo/SKILL.md)；[完整合成演示](examples/research-walkthrough.md)；[输入模板](skills/research-duo/assets/research-brief.md)。
+Codex 可把首句替换为 `使用 $research-duo`；Claude Code 使用 `/research-duo`。支持 quick、design/deep、update；不用同时启用所有计算。入口：[SKILL.md](skills/research-duo/SKILL.md)；[完整合成演示](examples/research-walkthrough.md)；[护理研究设计合成案例](examples/nursing-research-design.md)；[输入模板](skills/research-duo/assets/research-brief.md)。
 
 ## 本地计算
 
